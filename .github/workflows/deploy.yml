@@ -1,0 +1,65 @@
+name: Deploy RoleFlux
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Python Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install Dependencies
+        run: pip install -r requirements.txt pytest
+        
+      - name: Run Pytest
+        run: pytest tests/
+
+  deploy:
+    name: Deploy to Google Cloud (Terraform)
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    # These permissions are required for Workload Identity Federation
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/75387629276/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider'
+          service_account: 'github-actions-deployer@roleflux-prod-1234.iam.gserviceaccount.com'
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+        
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: terraform
+        
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: terraform

@@ -1,4 +1,4 @@
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Dict
 from pydantic import BaseModel, Field
 
 class AuthenticationInfo(BaseModel):
@@ -26,7 +26,14 @@ class AuditLogProtoPayload(BaseModel):
     serviceName: Optional[str] = None
     methodName: Optional[str] = None
     resourceName: Optional[str] = None
+    
+    # IAM Changes
     serviceData: Optional[ServiceData] = None
+    
+    # Storage & Generic API payloads
+    request: Optional[Dict[str, Any]] = None
+    response: Optional[Dict[str, Any]] = None
 
 class GCPAuditLog(BaseModel):
     protoPayload: AuditLogProtoPayload
+    timestamp: Optional[str] = None
