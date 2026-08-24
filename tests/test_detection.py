@@ -80,3 +80,46 @@ def test_off_hours_foreign_ip_escalation():
     assert finding.severity == "CRITICAL"
     mitre_ids = [t.id for t in finding.mitre_techniques]
     assert "T1078" in mitre_ids # Valid Accounts (due to IP anomaly)
+
+def test_firewall_exposure():
+    # Opening SSH to the world
+    log_dict = MOCK_BASE_LOG.copy()
+    log_dict["timestamp"] = "2023-10-27T14:00:00Z"
+    log_dict["protoPayload"]["methodName"] = "v1.compute.firewalls.insert"
+    log_dict["protoPayload"]["resourceName"] = "projects/prod/firewalls/allow-ssh"
+    log_dict["protoPayload"]["request"] = {
+        "sourceRanges": ["0.0.0.0/0", "10.0.0.0/8"],
+        "allowed": [{"IPProtocol": "tcp", "ports": ["22", "80"]}]
+    }
+    
+    log = GCPAuditLog(**log_dict)
+    finding = analyze_log(log)
+    
+    assert finding is not None
+    assert finding.risk_score >= 80 # Highly critical
+    assert finding.severity == "CRITICAL"
+    mitre_ids = [t.id for t in finding.mitre_techniques]
+    assert "T1562.007" in mitre_ids
+
+def test_crypto_mining_compute():
+    # Creating a massive GPU instance with default SA
+    log_dict = MOCK_BASE_LOG.copy()
+    log_dict["timestamp"] = "2023-10-27T14:00:00Z"
+    log_dict["protoPayload"]["methodName"] = "v1.compute.instances.insert"
+    log_dict["protoPayload"]["resourceName"] = "projects/prod/instances/miner-01"
+    log_dict["protoPayload"]["request"] = {
+        "machineType": "projects/prod/zones/us-central1-a/machineTypes/a2-highgpu-8g",
+        "serviceAccounts": [
+            {"email": "123456789-compute@developer.gserviceaccount.com"}
+        ]
+    }
+    
+    log = GCPAuditLog(**log_dict)
+    finding = analyze_log(log)
+    
+    assert finding is not None
+    assert finding.risk_score >= 90 # High power + default SA
+    assert finding.severity == "CRITICAL"
+    mitre_ids = [t.id for t in finding.mitre_techniques]
+    assert "T1496" in mitre_ids
+    assert "T1078.004" in mitre_ids

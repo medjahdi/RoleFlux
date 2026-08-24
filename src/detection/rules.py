@@ -25,8 +25,10 @@ MITRE_MAPPINGS = {
     "T1098": {"id": "T1098", "name": "Account Manipulation"},
     "T1078.004": {"id": "T1078.004", "name": "Valid Accounts: Cloud Accounts"},
     "T1078": {"id": "T1078", "name": "Valid Accounts"},
-    "T1098.004": {"id": "T1098.004", "name": "Account Manipulation: SSH Authorized Keys"}, # Closest to SA Keys
-    "T1530": {"id": "T1530", "name": "Data from Cloud Storage"}
+    "T1098.004": {"id": "T1098.004", "name": "Account Manipulation: SSH Authorized Keys"},
+    "T1530": {"id": "T1530", "name": "Data from Cloud Storage"},
+    "T1562.007": {"id": "T1562.007", "name": "Impair Defenses: Disable or Modify Cloud Firewall"},
+    "T1496": {"id": "T1496", "name": "Resource Hijacking"}
 }
 
 def calculate_identity_risk(member: str) -> int:
