@@ -38,6 +38,10 @@ jobs:
       contents: 'read'
       id-token: 'write'
       
+    env:
+      TF_VAR_project_id: "roleflux-prod-1234"
+      TF_VAR_slack_webhook_url: "https://hooks.slack.com/services/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"
+      
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
