@@ -61,6 +61,27 @@ def send_slack_alert(finding_json: str):
             ]
         }
         
+        if finding.get("ai_summary") and finding.get("ai_remediation"):
+            blocks["blocks"].extend([
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"✨ *Vertex AI Executive Summary:*\n{finding.get('ai_summary')}"
+                    }
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"🛠️ *Instant Remediation Command:*\n```{finding.get('ai_remediation')}```"
+                    }
+                }
+            ])
+        
         response = requests.post(webhook_url, json=blocks)
         response.raise_for_status()
         print("[Slack Output Module] Successfully sent alert to Slack!")

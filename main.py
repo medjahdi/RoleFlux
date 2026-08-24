@@ -6,6 +6,7 @@ from src.models.audit_log import GCPAuditLog
 from src.detection.engine import analyze_log
 from src.outputs.slack import send_slack_alert
 from src.outputs.bigquery import write_to_bigquery
+from src.detection.ai_triage import generate_triage_context
 
 @functions_framework.cloud_event
 def roleflux_entrypoint(cloud_event: CloudEvent):
@@ -42,6 +43,9 @@ def roleflux_entrypoint(cloud_event: CloudEvent):
     finding = analyze_log(audit_log)
     
     if finding:
+        if finding.severity == "CRITICAL":
+            generate_triage_context(finding)
+            
         finding_json = finding.model_dump_json(indent=2)
         print(f"Finding Generated: Score {finding.risk_score}")
         

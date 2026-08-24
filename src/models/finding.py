@@ -18,3 +18,5 @@ class Finding(BaseModel):
     targets: List[str] = Field(default_factory=list)
     raw_event: Dict[str, Any]
     context_enriched: bool = False # Was this enriched by Firestore state?
+    ai_summary: str | None = None
+    ai_remediation: str | None = None
