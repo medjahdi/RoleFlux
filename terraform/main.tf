@@ -277,7 +277,11 @@ resource "google_project_iam_member" "github_actions_permissions" {
   for_each = toset([
     "roles/editor",
     "roles/resourcemanager.projectIamAdmin",
-    "roles/secretmanager.admin"
+    "roles/secretmanager.admin",
+    "roles/iam.serviceAccountUser",
+    "roles/cloudfunctions.admin",
+    "roles/run.admin",
+    "roles/artifactregistry.admin"
   ])
   project = var.project_id
   role    = each.key
