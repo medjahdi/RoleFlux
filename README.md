@@ -1,7 +1,7 @@
 <div align="center">
   <img src="dashboard/web/public/logo.jpg" alt="RoleFlux Logo" width="150" style="border-radius: 12px; margin-bottom: 20px;" />
 
-  # 🛡️ RoleFlux
+  # RoleFlux
 
   **AI-Powered GCP Cloud Detection & Response (CDR) Platform**
 
@@ -18,19 +18,19 @@
 
 ---
 
-## ✨ Features
+## Core Features
 
-- 🧠 **"Detection Engine First, AI Second" Architecture:** Avoids LLM hallucinations by using a strict, deterministic Python engine to calculate Risk Scores (0-100) before ever involving AI.
-- ⚡ **100% Serverless & Event-Driven:** Deployed entirely on GCP using Pub/Sub, Log Sinks, and Cloud Functions (Gen2). Zero servers to manage.
-- 🎯 **MITRE ATT&CK Mapping:** Automatically maps detected anomalous IAM activity to specific MITRE tactics (e.g., `T1098 - Account Manipulation`).
-- 🤖 **Vertex AI (Gemini) Triage:** Generates sharp, 2-sentence executive summaries and provides exact `gcloud` remediation commands for the responding engineer.
-- 📊 **Next.js Command Center:** A premium, dark-themed dashboard connecting directly to a BigQuery data lake for real-time threat visualization.
-- 🛠️ **Built-in Attack Simulator:** Comes with a Purple Teaming Python suite to safely simulate and inject fake GCP attacks into the pipeline for testing.
-- 🚀 **DevSecOps Ready:** Includes a GitHub Actions CI/CD pipeline with Terraform Workspaces (Staging/Prod) and Keyless Workload Identity Federation.
+- **"Detection Engine First, AI Second" Architecture:** Avoids LLM hallucinations by using a strict, deterministic Python engine to calculate Risk Scores (0-100) before ever involving AI.
+- **100% Serverless & Event-Driven:** Deployed entirely on GCP using Pub/Sub, Log Sinks, and Cloud Functions (Gen2). Zero servers to manage.
+- **MITRE ATT&CK Mapping:** Automatically maps detected anomalous IAM activity to specific MITRE tactics (e.g., `T1098 - Account Manipulation`).
+- **Vertex AI (Gemini) Triage:** Generates sharp, 2-sentence executive summaries and provides exact `gcloud` remediation commands for the responding engineer.
+- **Next.js Command Center:** A premium, dark-themed dashboard connecting directly to a BigQuery data lake for real-time threat visualization.
+- **Built-in Attack Simulator:** Comes with a Purple Teaming Python suite to safely simulate and inject fake GCP attacks into the pipeline for testing.
+- **DevSecOps Ready:** Includes a GitHub Actions CI/CD pipeline with Terraform Workspaces (Staging/Prod) and Keyless Workload Identity Federation.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 <div align="center">
   <img src="docs/architecture.png" alt="Architecture Diagram" width="800" style="border-radius: 8px; margin-bottom: 15px;" />
@@ -45,7 +45,7 @@
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Google Cloud Platform (GCP) Project with billing enabled
@@ -92,7 +92,7 @@ python3 attack-simulator/run_simulation.py
 
 ---
 
-## 💻 Screenshots in Action
+## Screenshots in Action
 
 <div align="center">
   <h3>The Command Center Dashboard</h3>
@@ -117,7 +117,7 @@ python3 attack-simulator/run_simulation.py
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions from the community! Whether it's adding new detection rules, improving the UI, or expanding to AWS/Azure.
 
@@ -125,7 +125,7 @@ Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on how
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
