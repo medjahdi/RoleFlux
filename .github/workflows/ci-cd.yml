@@ -1,0 +1,114 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Ensure only one deployment runs at a time
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Python Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Run Pytest
+        run: pytest tests/ -v
+
+  terraform-staging:
+    name: Deploy to Staging
+    needs: test
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/1234567890/locations/global/workloadIdentityPools/github-actions-pool-staging/providers/github-actions-prov-staging'
+          service_account: 'github-actions-staging@roleflux-prod-1234.iam.gserviceaccount.com'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: Terraform Select Workspace (Staging)
+        working-directory: ./terraform
+        run: terraform workspace select staging || terraform workspace new staging
+
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: terraform plan -var="environment=staging" -var="project_id=roleflux-prod-1234" -var="slack_webhook_url=${{ secrets.SLACK_WEBHOOK_URL }}" -out=tfplan
+
+      - name: Terraform Apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve tfplan
+
+  terraform-prod:
+    name: Deploy to Production
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/1234567890/locations/global/workloadIdentityPools/github-actions-pool-prod/providers/github-actions-prov-prod'
+          service_account: 'github-actions-prod@roleflux-prod-1234.iam.gserviceaccount.com'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: Terraform Select Workspace (Prod)
+        working-directory: ./terraform
+        run: terraform workspace select prod || terraform workspace new prod
+
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: terraform plan -var="environment=prod" -var="project_id=roleflux-prod-1234" -var="slack_webhook_url=${{ secrets.SLACK_WEBHOOK_URL }}" -out=tfplan
+
+      - name: Terraform Apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve tfplan

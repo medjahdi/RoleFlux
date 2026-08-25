@@ -12,8 +12,9 @@ HIGH_RISK_ROLES = {
 
 INTERNAL_DOMAINS = ["your-company.com", "gmail.com"]
 KNOWN_AUTOMATION = [
-    "terraform-prod@your-company.iam.gserviceaccount.com",
-    "github-actions@your-company.iam.gserviceaccount.com"
+    "terraform-prod",
+    "github-actions",
+    "github-actions-deployer"
 ]
 APPROVED_CORPORATE_IPS = [
     "192.168.1.1",
@@ -69,10 +70,12 @@ def calculate_ip_risk(ip: str) -> int:
     return 0 if ip in APPROVED_CORPORATE_IPS else 20
 
 def is_approved_automation(actor: str) -> bool:
-    return actor in KNOWN_AUTOMATION or actor.endswith("system.gserviceaccount.com")
+    if actor.endswith("system.gserviceaccount.com"):
+        return True
+    return any(known in actor for known in KNOWN_AUTOMATION)
 
 def calculate_automation_multiplier(actor: str) -> float:
-    if actor in KNOWN_AUTOMATION or actor.endswith("system.gserviceaccount.com"):
+    if is_approved_automation(actor):
         return 0.1
     return 1.0
 

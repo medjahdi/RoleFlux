@@ -26,3 +26,9 @@ variable "organization_id" {
   type        = string
   default     = ""
 }
+
+variable "environment" {
+  description = "Deployment environment (e.g., staging, prod)"
+  type        = string
+  default     = "prod"
+}
