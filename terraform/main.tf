@@ -100,7 +100,7 @@ data "archive_file" "source" {
   type        = "zip"
   source_dir  = "${path.module}/.."
   output_path = "${path.module}/function-source.zip"
-  excludes    = ["terraform", "venv", ".git", "attack-simulator", "tests", ".github", ".gitignore", ".DS_Store"]
+  excludes    = ["terraform", "venv", ".git", "attack-simulator", "tests", ".github", ".gitignore", ".DS_Store", "dashboard"]
 }
 
 resource "google_storage_bucket" "source_bucket" {
